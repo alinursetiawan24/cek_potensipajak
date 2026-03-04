@@ -146,7 +146,7 @@ export default function TaxDashboardPrototype() {
 
   /* FUNGSI BACA EXCEL */
     const handleExcelUpload = (e) => {
-    import { supabase } from "./supabase";
+    import { supabase } from "../supabase";
 
     const file = e.target.files[0];
     if (!file) return;
