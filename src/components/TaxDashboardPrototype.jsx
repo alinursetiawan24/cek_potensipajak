@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as XLSX from "xlsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ export default function TaxDashboardPrototype() {
   const [activeDays, setActiveDays] = useState("");
 
   const [analysisHistory, setAnalysisHistory] = useState([]);
+
+  const [excelData, setExcelData] = useState([]);
 
   const namaUsaha = "Contoh Restoran Nusantara";
 
@@ -113,6 +116,39 @@ export default function TaxDashboardPrototype() {
     setAnalysisHistory((prev) => [...prev, newHistory]);
   };
 
+  const handleExcelUpload = (e) => {
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+
+      const data = new Uint8Array(event.target.result);
+
+      const workbook = XLSX.read(data, { type: "array" });
+
+      const sheetName = workbook.SheetNames[0];
+
+      const worksheet = workbook.Sheets[sheetName];
+
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      const formatted = jsonData.map((row) => ({
+        tahun: String(row.Tahun),
+        bulan: row.Bulan,
+        omzet: Number(row["Omzet Lapor"]),
+        pajak: Number(row["Pajak Lapor"])
+      }));
+
+      setExcelData(formatted);
+
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 flex">
 
@@ -178,6 +214,7 @@ export default function TaxDashboardPrototype() {
               </CardHeader>
 
               <CardContent className="space-y-5">
+
                 <Input placeholder="NPWPD" />
                 <Input placeholder="Nama / Objek Pajak" />
 
@@ -198,16 +235,16 @@ export default function TaxDashboardPrototype() {
                 </div>
 
                 <div className="space-y-2">
-                  <Input type="file" accept=".xlsx,.xls" />
+                  <Input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleExcelUpload}
+                  />
                   <p className="text-xs text-slate-500">
                     Format Excel: Tahun | Bulan | Omzet Lapor | Pajak Lapor
                   </p>
-                  <Button variant="outline" className="w-full">
-                    Download Template Excel
-                  </Button>
                 </div>
 
-                <Button className="w-full">Upload Master Data</Button>
               </CardContent>
             </Card>
 
@@ -228,257 +265,28 @@ export default function TaxDashboardPrototype() {
                   </thead>
 
                   <tbody>
-                    <tr className="border-b">
-                      <td className="p-3">2024</td>
-                      <td className="p-3">Januari</td>
-                      <td className="p-3">Rp120.000.000</td>
-                      <td className="p-3">Rp12.000.000</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-3">2024</td>
-                      <td className="p-3">Februari</td>
-                      <td className="p-3">Rp110.000.000</td>
-                      <td className="p-3">Rp11.000.000</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-3">2025</td>
-                      <td className="p-3">Januari</td>
-                      <td className="p-3">Rp135.000.000</td>
-                      <td className="p-3">Rp13.500.000</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
 
-          </div>
-        )}
-
-        {/* SEARCH */}
-        {!adminOpen && !analysisPage && !searched && (
-          <Card className="w-full max-w-4xl">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                Pencarian Objek Pajak
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              <Input
-                className="h-12 text-base"
-                placeholder="Masukkan NPWPD"
-                value={npwpd}
-                onChange={(e) => setNpwpd(e.target.value)}
-              />
-
-              <Button className="w-full h-12 text-base" onClick={handleSearch}>
-                Cari Objek Pajak
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* RESULT */}
-        {!adminOpen && !analysisPage && searched && (
-          <div className="w-full max-w-6xl flex flex-col gap-6">
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Informasi Objek Pajak</CardTitle>
-              </CardHeader>
-
-              <CardContent className="grid md:grid-cols-4 gap-6">
-                <div>
-                  <div className="text-sm text-slate-500">NPWPD</div>
-                  <div className="font-semibold">{npwpd}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-slate-500">Objek Pajak</div>
-                  <div className="font-semibold">{namaUsaha}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-slate-500">Jenis Usaha</div>
-                  <div className="font-semibold">{businessType || "-"}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-slate-500">Jenis Pajak</div>
-                  <div className="font-semibold">{taxType}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex justify-between items-center">
-                <CardTitle>Laporan Pajak Per Tahun</CardTitle>
-
-                <Select value={reportYear} onValueChange={setReportYear}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((y) => (
-                      <SelectItem key={y} value={y}>{y}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </CardHeader>
-
-              <CardContent>
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-50">
+                  {excelData.length === 0 && (
                     <tr>
-                      <th className="p-3 text-left">Bulan</th>
-                      <th className="p-3 text-left">Omzet Lapor</th>
-                      <th className="p-3 text-left">Pajak Lapor</th>
+                      <td colSpan="4" className="p-3 text-center text-slate-400">
+                        Belum ada data Excel yang diupload
+                      </td>
                     </tr>
-                  </thead>
+                  )}
 
-                  <tbody>
-                    {filteredReports.map((row, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="p-3">{row.bulan}</td>
-                        <td className="p-3">{formatRupiah(row.omzet)}</td>
-                        <td className="p-3">{formatRupiah(row.pajak)}</td>
-                      </tr>
-                    ))}
+                  {excelData.map((row,i)=>(
+                    <tr key={i} className="border-b">
+                      <td className="p-3">{row.tahun}</td>
+                      <td className="p-3">{row.bulan}</td>
+                      <td className="p-3">{formatRupiah(row.omzet)}</td>
+                      <td className="p-3">{formatRupiah(row.pajak)}</td>
+                    </tr>
+                  ))}
+
                   </tbody>
                 </table>
               </CardContent>
             </Card>
-
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={resetSearch}>Cari Objek Pajak Lain</Button>
-              <Button onClick={() => setAnalysisPage(true)}>Buka Analisis Potensi Pajak</Button>
-            </div>
-
-          </div>
-        )}
-
-        {/* ANALYSIS */}
-        {!adminOpen && analysisPage && (
-          <div className="w-full max-w-6xl flex flex-col gap-6">
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Parameter Analisis</CardTitle>
-              </CardHeader>
-
-              <CardContent className="grid md:grid-cols-2 gap-5">
-
-                {year && month && pajakLaporTerakhir === null && (
-                  <div className="md:col-span-2 bg-yellow-100 text-yellow-800 p-3 rounded-lg text-sm">
-                    ⚠ Data pajak lapor untuk periode ini belum tersedia.
-                  </div>
-                )}
-
-                <Select value={year} onValueChange={setYear}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih Tahun" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((y) => (
-                      <SelectItem key={y} value={y}>{y}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={month} onValueChange={setMonth}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih Bulan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"].map((m) => (
-                      <SelectItem key={m} value={m}>{m}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Input type="number" placeholder="Jumlah Konsumen per Hari" value={consumers} onChange={(e) => setConsumers(e.target.value)} />
-                <Input type="number" placeholder="Pembayaran Minimal" value={minPayment} onChange={(e) => setMinPayment(e.target.value)} />
-                <Input type="number" placeholder="Hari Aktif" value={activeDays} onChange={(e) => setActiveDays(e.target.value)} />
-
-                <div className="md:col-span-2 grid md:grid-cols-3 gap-4 pt-4">
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <div className="text-xs text-slate-500">Total Omzet / Hari</div>
-                    <div className="text-lg font-bold">{formatRupiah(totalDaily)}</div>
-                  </div>
-
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <div className="text-xs text-slate-500">Total Omzet / Bulan</div>
-                    <div className="text-lg font-bold">{formatRupiah(totalMonthly)}</div>
-                  </div>
-
-                  <div className="p-4 bg-green-100 rounded-xl">
-                    <div className="text-xs">Potensi Pajak</div>
-                    <div className="text-lg font-bold text-green-700">{formatRupiah(taxPotential)}</div>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 grid md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-yellow-100 rounded-xl">
-                    <div className="text-xs">Pajak Lapor</div>
-                    <div className="text-lg font-bold">{pajakLaporTerakhir !== null ? formatRupiah(pajakLaporTerakhir) : "-"}</div>
-                  </div>
-
-                  <div className="p-4 bg-red-100 rounded-xl">
-                    <div className="text-xs">Selisih Pajak</div>
-                    <div className="text-lg font-bold text-red-700">{selisihPajak !== null ? formatRupiah(selisihPajak) : "-"}</div>
-                  </div>
-
-                  <div className={`p-4 rounded-xl ${warnaRisiko}`}>
-                    <div className="text-xs">Risiko</div>
-                    <div className="text-lg font-bold">{kategoriRisiko}</div>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 flex gap-3">
-                  <Button onClick={saveAnalysis} className="flex-1">Simpan ke Riwayat Analisis</Button>
-                </div>
-
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Riwayat Analisis</CardTitle>
-              </CardHeader>
-
-              <CardContent>
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      <th className="p-3 text-left">Tahun</th>
-                      <th className="p-3 text-left">Bulan</th>
-                      <th className="p-3 text-left">Potensi</th>
-                      <th className="p-3 text-left">Pajak Lapor</th>
-                      <th className="p-3 text-left">Selisih</th>
-                      <th className="p-3 text-left">Risiko</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {analysisHistory.map((row, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="p-3">{row.tahun}</td>
-                        <td className="p-3">{row.bulan}</td>
-                        <td className="p-3">{formatRupiah(row.potensi)}</td>
-                        <td className="p-3">{row.pajak_lapor !== null ? formatRupiah(row.pajak_lapor) : "-"}</td>
-                        <td className="p-3">{row.selisih !== null ? formatRupiah(row.selisih) : "-"}</td>
-                        <td className="p-3">{row.risiko}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={resetSearch}>Cari Objek Pajak Lain</Button>
-              <Button variant="outline" onClick={() => setAnalysisPage(false)}>Kembali</Button>
-            </div>
 
           </div>
         )}
