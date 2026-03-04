@@ -155,7 +155,7 @@ export default function TaxDashboardPrototype() {
   };
 
   /* FUNGSI BACA EXCEL */
-    const handleExcelUpload = async (e) => {
+  const handleExcelUpload = async (e) => {
 
   const file = e.target.files[0];
   if (!file) return;
@@ -175,27 +175,33 @@ export default function TaxDashboardPrototype() {
     const json = XLSX.utils.sheet_to_json(worksheet);
 
     const formatted = json.map((row)=>({
-    npwpd: row.NPWPD,
-    nama_usaha: row["Nama Usaha"],
-    tahun: String(row.Tahun),
-    bulan: row.Bulan,
-    omzet: Number(row["Omzet Lapor"]),
-    pajak: Number(row["Pajak Lapor"])
-  }));
+      npwpd: row.NPWPD,
+      nama_usaha: row["Nama Usaha"],
+      tahun: String(row.Tahun),
+      bulan: row.Bulan,
+      omzet: Number(row["Omzet Lapor"]),
+      pajak: Number(row["Pajak Lapor"])
+    }));
 
-      setExcelPreview(formatted);
-      await supabase
-        .from("laporan_pajak")
-        .insert(formatted);
+    console.log(formatted); // cek apakah data terbaca
 
-      setExcelPreview(formatted);
-      showToast("Data berhasil masuk database");
+    const { data: inserted, error } = await supabase
+      .from("laporan_pajak")
+      .insert(formatted);
 
-    };
+    if (error) {
+      console.log("ERROR SUPABASE:", error);
+    } else {
+      console.log("DATA MASUK:", inserted);
+    }
 
-    reader.readAsArrayBuffer(file);
+    setExcelPreview(formatted);
 
   };
+
+  reader.readAsArrayBuffer(file);
+
+};
 
   return (
     <div className="min-h-screen bg-slate-100 flex">
