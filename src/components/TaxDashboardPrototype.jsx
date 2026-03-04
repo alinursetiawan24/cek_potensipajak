@@ -53,13 +53,14 @@ export default function TaxDashboardPrototype() {
     { tahun: "2026", bulan: "April", omzet: 160000000, pajak: 16000000 }
   ];
 
-  const filteredReports = reportData.filter((r) => r.tahun === reportYear);
+  const dataSource = excelPreview.length > 0 ? excelPreview : reportData;
+  const filteredReports = dataSource.filter((r) => r.tahun === reportYear);
 
   const totalDaily = consumers && minPayment ? consumers * minPayment : 0;
   const totalMonthly = totalDaily && activeDays ? totalDaily * activeDays : 0;
   const taxPotential = totalMonthly * 0.1;
 
-  const selectedReport = reportData.find(
+  const selectedReport = dataSource.find(...)
     (r) => r.tahun === year && r.bulan === month
   );
 
@@ -116,7 +117,7 @@ export default function TaxDashboardPrototype() {
   };
 
   /* FUNGSI BACA EXCEL */
-  const handleExcelUpload = (e) => {
+    const handleExcelUpload = (e) => {
 
     const file = e.target.files[0];
     if (!file) return;
@@ -148,7 +149,6 @@ export default function TaxDashboardPrototype() {
 
     reader.readAsArrayBuffer(file);
 
-    setAnalysisHistory((prev) => [...prev, newHistory]);
   };
 
   return (
