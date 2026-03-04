@@ -185,14 +185,12 @@ export default function TaxDashboardPrototype() {
 
     console.log(formatted); // cek apakah data terbaca
 
-    const { data: inserted, error } = await supabase
-      .from("laporan_pajak")
-      .insert(formatted);
+    const { data, error } = await supabase
+    .from("laporan_pajak")
+    .insert(formatted);
 
-    if (error) {
-      console.log("ERROR SUPABASE:", error);
-    } else {
-      console.log("DATA MASUK:", inserted);
+    console.log("SUPABASE DATA:", data);
+    console.log("SUPABASE ERROR:", error);
     }
 
     setExcelPreview(formatted);
