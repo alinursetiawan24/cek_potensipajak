@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
+import { supabase } from "../supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ export default function TaxDashboardPrototype() {
   const [analysisPage, setAnalysisPage] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
@@ -26,6 +28,32 @@ export default function TaxDashboardPrototype() {
   const [excelPreview, setExcelPreview] = useState([]);
 
   const [namaUsaha, setNamaUsaha] = useState("Contoh Restoran Nusantara");
+
+    useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+
+    const { data } = await supabase
+      .from("laporan_pajak")
+      .select("*");
+
+    if (data) {
+      setExcelPreview(data);
+    }
+
+  };
+
+  const showToast = (message, type = "success") => {
+
+  setToast({ message, type });
+
+  setTimeout(() => {
+    setToast(null);
+  }, 3000);
+
+};
 
   const businessTaxMap = {
     "PBJT - MAKANAN DAN/ATAU MINUMAN": "RESTORAN",
@@ -118,6 +146,7 @@ export default function TaxDashboardPrototype() {
 
   /* FUNGSI BACA EXCEL */
     const handleExcelUpload = (e) => {
+    import { supabase } from "./supabase";
 
     const file = e.target.files[0];
     if (!file) return;
@@ -144,6 +173,10 @@ export default function TaxDashboardPrototype() {
       }));
 
       setExcelPreview(formatted);
+     await supabase.from("laporan_pajak").insert(formatted);
+
+setExcelPreview(formatted);
+showToast("Data berhasil masuk database");
 
     };
 
