@@ -560,31 +560,40 @@ export default function TaxDashboardPrototype() {
                     </tr>
                   </thead>
 
-                  <tbody>
-                    {analysisHistory.map((row, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="p-3">{row.tahun}</td>
-                        <td className="p-3">{row.bulan}</td>
-                        <td className="p-3">{formatRupiah(row.potensi)}</td>
-                        <td className="p-3">{row.pajak_lapor !== null ? formatRupiah(row.pajak_lapor) : "-"}</td>
-                        <td className="p-3">{row.selisih !== null ? formatRupiah(row.selisih) : "-"}</td>
-                        <td className="p-3">{row.risiko}</td>
-                      </tr>
-                    ))}
-                  </tbody>
+                <tbody>
+                  {analysisHistory.map((row, i) => (
+                    <tr key={i} className="border-b">
+                      <td className="p-3">{row.tahun}</td>
+                      <td className="p-3">{row.bulan}</td>
+                      <td className="p-3">{formatRupiah(row.potensi)}</td>
+                      <td className="p-3">
+                        {row.pajak_lapor !== null ? formatRupiah(row.pajak_lapor) : "-"}
+                      </td>
+                      <td className="p-3">
+                        {row.selisih !== null ? formatRupiah(row.selisih) : "-"}
+                      </td>
+                      <td className="p-3">{row.risiko}</td>
+                    </tr>
+                  ))}
+                </tbody>
                 </table>
-              </CardContent>
-            </Card>
+                </CardContent>
+                </Card>
 
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={resetSearch}>Cari Objek Pajak Lain</Button>
-              <Button variant="outline" onClick={() => setAnalysisPage(false)}>Kembali</Button>
-            </div>
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={resetSearch}>
+                    Cari Objek Pajak Lain
+                  </Button>
+                  <Button variant="outline" onClick={() => setAnalysisPage(false)}>
+                    Kembali
+                  </Button>
+                </div>
+
+                </div>
+                )}
 
           </div>
-        )}
 
-      </div>
-
-    </div>
+        </div>
   );
+}
