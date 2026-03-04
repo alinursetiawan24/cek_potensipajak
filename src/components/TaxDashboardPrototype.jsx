@@ -194,7 +194,7 @@ export default function TaxDashboardPrototype() {
                 </Select>
 
                 <div className="text-sm text-slate-500">
-                  Jenis Pajak otomatis: <b>{taxType}</b>
+                  Jenis Pajak : <b>{taxType}</b>
                 </div>
 
                 <div className="space-y-2">
@@ -272,7 +272,7 @@ export default function TaxDashboardPrototype() {
               />
 
               <Button className="w-full h-12 text-base" onClick={handleSearch}>
-                Cari Data Usaha
+                Cari Objek Pajak
               </Button>
             </CardContent>
           </Card>
