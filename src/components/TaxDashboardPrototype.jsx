@@ -27,7 +27,7 @@ export default function TaxDashboardPrototype() {
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [excelPreview, setExcelPreview] = useState([]);
 
-  const [namaUsaha, setNamaUsaha] = useState("Contoh Restoran Nusantara");
+  const [namaUsaha, setNamaUsaha] = useState("");
 
     useEffect(() => {
     loadData();
