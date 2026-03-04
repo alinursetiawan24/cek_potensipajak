@@ -60,8 +60,8 @@ export default function TaxDashboardPrototype() {
   const totalMonthly = totalDaily && activeDays ? totalDaily * activeDays : 0;
   const taxPotential = totalMonthly * 0.1;
 
-  const selectedReport = dataSource.find(...)
-    (r) => r.tahun === year && r.bulan === month
+  const selectedReport = dataSource.find(
+  (r) => r.tahun === year && r.bulan === month
   );
 
   const pajakLaporTerakhir = selectedReport?.pajak ?? null;
