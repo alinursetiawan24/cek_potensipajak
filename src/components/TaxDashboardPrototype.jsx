@@ -216,8 +216,17 @@ export default function TaxDashboardPrototype() {
               </CardHeader>
 
               <CardContent className="space-y-5">
-                <Input placeholder="NPWPD" />
-                <Input placeholder="Nama / Objek Pajak" />
+              <Input
+              placeholder="NPWPD"
+              value={npwpd}
+              onChange={(e) => setNpwpd(e.target.value)}
+            />
+          
+            <Input
+              placeholder="Nama / Objek Pajak"
+              value={namaUsaha}
+              onChange={(e) => setNamaUsaha(e.target.value)}
+            />
 
                 <Select value={businessType} onValueChange={setBusinessType}>
                   <SelectTrigger>
