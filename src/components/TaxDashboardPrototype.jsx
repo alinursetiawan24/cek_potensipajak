@@ -27,6 +27,7 @@ export default function TaxDashboardPrototype() {
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [excelPreview, setExcelPreview] = useState([]);
 
+  const [namaUsaha, setNamaUsaha] = useState("");
   useEffect(() => {
     loadData();
   }, []);
@@ -42,7 +43,7 @@ export default function TaxDashboardPrototype() {
     }
 
   };
-  const [namaUsaha, setNamaUsaha] = useState("");
+
   const showToast = (message, type = "success") => {
 
   setToast({ message, type });
@@ -116,11 +117,22 @@ export default function TaxDashboardPrototype() {
     }
   }
 
-  const handleSearch = () => {
-    if (!npwpd) return;
-    setSearched(true);
-  };
+  const handleSearch = async () => {
 
+  const { data } = await supabase
+    .from("laporan_pajak")
+    .select("*")
+    .eq("npwpd", npwpd);
+
+  if (data && data.length > 0) {
+
+    setNamaUsaha(data[0].nama_usaha);
+    setExcelPreview(data);
+    setSearched(true);
+
+  }
+
+};
   const resetSearch = () => {
     setNpwpd("");
     setSearched(false);
@@ -163,14 +175,18 @@ export default function TaxDashboardPrototype() {
     const json = XLSX.utils.sheet_to_json(worksheet);
 
     const formatted = json.map((row)=>({
-      tahun: String(row.Tahun),
-      bulan: row.Bulan,
-      omzet: Number(row["Omzet Lapor"]),
-      pajak: Number(row["Pajak Lapor"])
-    }));
+    npwpd: row.NPWPD,
+    nama_usaha: row["Nama Usaha"],
+    tahun: String(row.Tahun),
+    bulan: row.Bulan,
+    omzet: Number(row["Omzet Lapor"]),
+    pajak: Number(row["Pajak Lapor"])
+  }));
 
       setExcelPreview(formatted);
-     await supabase.from("laporan_pajak").insert(formatted);
+      await supabase
+        .from("laporan_pajak")
+        .insert(formatted);
 
       setExcelPreview(formatted);
       showToast("Data berhasil masuk database");
