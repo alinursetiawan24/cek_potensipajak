@@ -127,6 +127,7 @@ export default function TaxDashboardPrototype() {
   if (data && data.length > 0) {
 
     setNamaUsaha(data[0].nama_usaha);
+    setBusinessType(data[0].jenis_usaha);
     setExcelPreview(data);
     setSearched(true);
 
@@ -175,12 +176,13 @@ export default function TaxDashboardPrototype() {
       const json = XLSX.utils.sheet_to_json(worksheet);
 
       const formatted = json.map((row)=>({
-        npwpd: row.NPWPD,
-        nama_usaha: row["Nama Usaha"],
-        tahun: String(row.Tahun),
-        bulan: row.Bulan,
-        omzet: Number(row["Omzet Lapor"]),
-        pajak: Number(row["Pajak Lapor"])
+      npwpd: row.NPWPD,
+      nama_usaha: row["Nama Usaha"],
+      jenis_usaha: businessType,
+      tahun: String(row.Tahun),
+      bulan: row.Bulan,
+      omzet: Number(row["Omzet Lapor"]),
+      pajak: Number(row["Pajak Lapor"])
       }));
 
       console.log(formatted);
