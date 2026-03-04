@@ -595,5 +595,4 @@ export default function TaxDashboardPrototype() {
           </div>
 
         </div>
-  );
-}
+);
