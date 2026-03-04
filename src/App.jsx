@@ -2,7 +2,7 @@
 import TaxDashboardPrototype from "./components/TaxDashboardPrototype.jsx";
 
 function App(){
-  return <TaxDashboardPrototype/>
+  return <TaxDashboardPrototype/>;
 }
 
 export default App;
