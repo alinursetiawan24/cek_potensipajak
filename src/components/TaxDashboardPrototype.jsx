@@ -27,9 +27,7 @@ export default function TaxDashboardPrototype() {
   const [analysisHistory, setAnalysisHistory] = useState([]);
   const [excelPreview, setExcelPreview] = useState([]);
 
-  const [namaUsaha, setNamaUsaha] = useState("");
-
-    useEffect(() => {
+  useEffect(() => {
     loadData();
   }, []);
 
@@ -44,7 +42,7 @@ export default function TaxDashboardPrototype() {
     }
 
   };
-
+  const [namaUsaha, setNamaUsaha] = useState("");
   const showToast = (message, type = "success") => {
 
   setToast({ message, type });
@@ -53,7 +51,7 @@ export default function TaxDashboardPrototype() {
     setToast(null);
   }, 3000);
 
-};
+  };
 
   const businessTaxMap = {
     "PBJT - MAKANAN DAN/ATAU MINUMAN": "RESTORAN",
