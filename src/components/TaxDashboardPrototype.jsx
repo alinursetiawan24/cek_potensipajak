@@ -146,37 +146,36 @@ export default function TaxDashboardPrototype() {
 
   /* FUNGSI BACA EXCEL */
     const handleExcelUpload = async (e) => {
-    import { supabase } from "../supabase";
 
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
+  const reader = new FileReader();
 
-    reader.onload = (event) => {
+  reader.onload = async (event) => {
 
-      const data = new Uint8Array(event.target.result);
+    const data = new Uint8Array(event.target.result);
 
-      const workbook = XLSX.read(data, { type: "array" });
+    const workbook = XLSX.read(data, { type: "array" });
 
-      const sheetName = workbook.SheetNames[0];
+    const sheetName = workbook.SheetNames[0];
 
-      const worksheet = workbook.Sheets[sheetName];
+    const worksheet = workbook.Sheets[sheetName];
 
-      const json = XLSX.utils.sheet_to_json(worksheet);
+    const json = XLSX.utils.sheet_to_json(worksheet);
 
-      const formatted = json.map((row)=>({
-        tahun: String(row.Tahun),
-        bulan: row.Bulan,
-        omzet: Number(row["Omzet Lapor"]),
-        pajak: Number(row["Pajak Lapor"])
-      }));
+    const formatted = json.map((row)=>({
+      tahun: String(row.Tahun),
+      bulan: row.Bulan,
+      omzet: Number(row["Omzet Lapor"]),
+      pajak: Number(row["Pajak Lapor"])
+    }));
 
       setExcelPreview(formatted);
      await supabase.from("laporan_pajak").insert(formatted);
 
-setExcelPreview(formatted);
-showToast("Data berhasil masuk database");
+      setExcelPreview(formatted);
+      showToast("Data berhasil masuk database");
 
     };
 
