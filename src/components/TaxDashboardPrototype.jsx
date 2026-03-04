@@ -185,7 +185,7 @@ export default function TaxDashboardPrototype() {
 
     console.log(formatted); // cek apakah data terbaca
 
-    const { data, error } = await supabase
+    const { data: insertedData, error } = await supabase
     .from("laporan_pajak")
     .insert(formatted);
 
